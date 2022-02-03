@@ -1,31 +1,23 @@
-name: Example workflow for S3 Deploy
+name: Upload Website
+
 on:
   push:
     branches:
-      - master
+    - master
+
 jobs:
-  run:
+  deploy:
     runs-on: ubuntu-latest
-    env:
-      AWS_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY }}
-      AWS_ACCESS_SECRET: ${{ secrets.AWS_ACCESS_SECRET }}
     steps:
-        - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v1
 
-        - name: Install dependencies
-          run: yarn
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+        aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
+        aws-region: us-east-1
 
-        - name: Build
-          run: yarn build
-
-        - name: Deploy
-          uses: reggionick/s3-deploy@v3
-          with:
-            folder: build
-            bucket: ${{ secrets.AWS_BUCKET_NAME }}
-            bucket-region: ${{ secrets.S3_BUCKET_REGION }}
-            dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
-            invalidation: /
-            delete-removed: true
-            no-cache: true
-            private: true
+    - name: Deploy static site to S3 bucket
+      run: aws s3 sync ./public/ s3://simple-site-1984
