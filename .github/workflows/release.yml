@@ -18,6 +18,8 @@ jobs:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
         aws-secret-access-key: ${{ secrets.AWS_ACCESS_SECRET }}
         aws-region: us-east-1
+        dist-id: ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }}
+
 
     - name: Deploy static site to S3 bucket
       run: aws s3 sync ./public/ s3://simple-site-1984 --delete
